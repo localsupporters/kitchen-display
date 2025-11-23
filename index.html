@@ -1,11 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Kitchen Display</title>
-</head>
-<body>
-  <h1>Kitchen Display Setup Successful</h1>
-  <p>Your GitHub Pages site is active — slideshow coming next.</p>
-</body>
-</html>
+<script>
+// LOCATION OF YOUR IMAGES FOLDER ON GITHUB
+const apiURL = "https://api.github.com/repos/localsupporters/kitchen-display/contents/images";
+
+// Convert GitHub filename → RAW URL
+function rawURL(name) {
+  return `https://raw.githubusercontent.com/localsupporters/kitchen-display/main/images/${name}`;
+}
+
+// Fetch list of all images + build slideshow
+async function loadSlideshowImages() {
+  try {
+    const response = await fetch(apiURL);
+    const data = await response.json();
+
+    // Filter only images
+    const images = data
+      .filter(file => /\.(jpe?g|png|gif)$/i.test(file.name))
+      .map(file => rawURL(file.name));
+
+    console.log("Loaded images:", images);
+
+    // Start your slideshow with images[]
+    startSlideshow(images);
+
+  } catch (error) {
+    console.error("Error loading images:", error);
+  }
+}
+
+function startSlideshow(imageList) {
+  const img = document.getElementById("slideshow");
+  let i = 0;
+
+  function next() {
+    img.src = imageList[i];
+    i = (i + 1) % imageList.length;
+  }
+
+  next();
+  setInterval(next, 4000); // 4 seconds per slide
+}
+
+document.addEventListener("DOMContentLoaded", loadSlideshowImages);
+</script>
+
+<img id="slideshow" style="width:100%; object-fit:contain;">
+
